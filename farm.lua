@@ -58,8 +58,30 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- // Vars
 local LocalPlayer = Players.LocalPlayer
 
-
--- // Wait on teleport
+function serverhop()
+    print("PENIS")
+    pcall(function()
+	    Plr.Character:Destroy()
+	    repeat wait() until Plr.Character
+    end)
+    Plr:Kick("Rejoining...")
+    
+	while wait(5) do
+	    local x = {}
+	    for _, v in ipairs(game:GetService("HttpService"):JSONDecode(game:HttpGetAsync("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")).data) do
+		    if type(v) == "table" and v.maxPlayers > v.playing and v.id ~= game.JobId and v.maxPlayers-10 < v.playing then
+			    x[#x + 1] = v.id
+        	end
+	    end
+    	if #x > 0 then
+    		game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, x[math.random(1, #x)])
+    	end
+    end
+end
+spawn(function()
+    wait(300)
+    serverhop()
+end)
 LocalPlayer.OnTeleport:Connect(function(State)
     if (State == Enum.TeleportState.Started) then
         syn.queue_on_teleport(game:HttpGet("https://raw.githubusercontent.com/0nly6Ex/fastfarm/main/farm.lua"))
